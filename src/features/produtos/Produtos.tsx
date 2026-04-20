@@ -162,7 +162,8 @@ export default function Produtos() {
         onOpenChange={(v) => !v && setExcluirAlvo(null)}
         title="Excluir produto?"
         description={`O produto "${excluirAlvo?.nome}" será removido permanentemente.`}
-        confirmText="Excluir"
+        confirmLabel="Excluir"
+        destructive
         onConfirm={confirmarExcluir}
       />
     </>
