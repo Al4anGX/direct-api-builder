@@ -30,6 +30,46 @@ export const pedidosService = {
     return delay(ok(list));
   },
 
+  async criar(input: {
+    canal: CanalPedido;
+    cliente_id: string | null;
+    cliente_nome: string;
+    cliente_telefone: string;
+    itens: Pedido["itens"];
+    valor_entrega: number;
+    endereco_entrega?: string;
+    observacao_geral?: string;
+    enviar_para_producao: boolean;
+  }): Promise<ApiResponse<Pedido>> {
+    const subtotal = input.itens.reduce(
+      (sum, it) => sum + (it.preco_unitario * it.quantidade) +
+        (it.adicionais?.reduce((a, ad) => a + ad.preco, 0) ?? 0) * it.quantidade,
+      0
+    );
+    const proximoNumero = (Math.max(0, ...store.map(p => p.numero_pedido)) + 1) || 1001;
+    const novo: Pedido = {
+      id: `ped${Date.now()}`,
+      numero_pedido: proximoNumero,
+      espaco_id: "demo",
+      cliente_id: input.cliente_id,
+      cliente_nome: input.cliente_nome,
+      cliente_telefone: input.cliente_telefone,
+      canal: input.canal,
+      status: input.enviar_para_producao ? "Em analise" : "Rascunho",
+      prioridade_manual: false,
+      itens: input.itens,
+      valor_subtotal: subtotal,
+      valor_entrega: input.valor_entrega,
+      valor_total: subtotal + input.valor_entrega,
+      observacao_geral: input.observacao_geral,
+      endereco_entrega: input.endereco_entrega,
+      criado_em: new Date().toISOString(),
+      atualizado_em: new Date().toISOString(),
+    };
+    store = [novo, ...store];
+    return delay(ok(novo));
+  },
+
   async obter(id: string): Promise<ApiResponse<Pedido | null>> {
     return delay(ok(store.find((p) => p.id === id) ?? null));
   },
