@@ -32,7 +32,7 @@ export default function Pedidos() {
   const [busca, setBusca] = useState("");
   const [canal, setCanal] = useState<CanalPedido | "todos">("todos");
   const qc = useQueryClient();
-  const { role } = useAuth();
+  const { activeRole } = useAuth();
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["pedidos", busca, canal],
@@ -61,7 +61,7 @@ export default function Pedidos() {
     return base;
   }, [data]);
 
-  const podeAvancar = can(role, "editar_pedido");
+  const podeAvancar = can(activeRole, "editar_pedido");
 
   return (
     <>
