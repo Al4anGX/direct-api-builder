@@ -1,1 +1,7 @@
 project_id = "vrrattcyyqzkejxryupe"
+
+[functions.resolve-espaco]
+verify_jwt = false
+
+[functions.seed-demo]
+verify_jwt = false

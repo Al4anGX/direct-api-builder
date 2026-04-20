@@ -14,16 +14,139 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      espacos: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          cor_primaria: string | null
+          criado_em: string
+          id: string
+          logo_url: string | null
+          nome: string
+          slug: string | null
+          telefone: string
+          trial_ate: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          cor_primaria?: string | null
+          criado_em?: string
+          id?: string
+          logo_url?: string | null
+          nome: string
+          slug?: string | null
+          telefone: string
+          trial_ate?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          cor_primaria?: string | null
+          criado_em?: string
+          id?: string
+          logo_url?: string | null
+          nome?: string
+          slug?: string | null
+          telefone?: string
+          trial_ate?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          ativo: boolean
+          atualizado_em: string
+          criado_em: string
+          email: string
+          espaco_id: string | null
+          id: string
+          nome: string
+          telefone: string | null
+        }
+        Insert: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          email: string
+          espaco_id?: string | null
+          id: string
+          nome?: string
+          telefone?: string | null
+        }
+        Update: {
+          ativo?: boolean
+          atualizado_em?: string
+          criado_em?: string
+          email?: string
+          espaco_id?: string | null
+          id?: string
+          nome?: string
+          telefone?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_espaco_id_fkey"
+            columns: ["espaco_id"]
+            isOneToOne: false
+            referencedRelation: "espacos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          criado_em: string
+          espaco_id: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          criado_em?: string
+          espaco_id?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          criado_em?: string
+          espaco_id?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_espaco_id_fkey"
+            columns: ["espaco_id"]
+            isOneToOne: false
+            referencedRelation: "espacos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_espaco_id: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_superadmin: { Args: { _user_id: string }; Returns: boolean }
+      pertence_ao_espaco: {
+        Args: { _espaco_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "superadmin" | "admin" | "caixa" | "entregador"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +273,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["superadmin", "admin", "caixa", "entregador"],
+    },
   },
 } as const
