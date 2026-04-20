@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { PageHeader } from "@/components/common/PageHeader";
 import { LoadingSkeleton } from "@/components/common/LoadingState";
 import { EmptyState } from "@/components/common/EmptyState";
@@ -8,11 +9,23 @@ import { Badge } from "@/components/ui/badge";
 import { comandasService } from "@/services/comandas.service";
 import { formatBRL, formatTimeAgo } from "@/lib/formatters";
 import { ClipboardList, Plus } from "lucide-react";
-import { toast } from "sonner";
 import { PermissionGate } from "@/components/common/PermissionGate";
+import { AbrirComandaDialog } from "./AbrirComandaDialog";
+import { ComandaDrawer } from "./ComandaDrawer";
 
 export default function Comandas() {
+  const qc = useQueryClient();
+  const [abrirOpen, setAbrirOpen] = useState(false);
+  const [selId, setSelId] = useState<string | null>(null);
+
   const { data, isLoading } = useQuery({ queryKey: ["comandas"], queryFn: () => comandasService.listar() });
+
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ["comandas"] });
+    if (selId) qc.invalidateQueries({ queryKey: ["comanda", selId] });
+  };
+
+  const abertas = data?.data?.filter((c) => c.status === "aberta") ?? [];
 
   return (
     <>
@@ -21,7 +34,7 @@ export default function Comandas() {
         description="Comandas abertas no Espaco"
         actions={
           <PermissionGate action="abrir_comanda">
-            <Button onClick={() => toast.info("Abrir comanda — próxima entrega")}>
+            <Button onClick={() => setAbrirOpen(true)}>
               <Plus className="h-4 w-4 mr-1" /> Nova comanda
             </Button>
           </PermissionGate>
@@ -29,16 +42,20 @@ export default function Comandas() {
       />
 
       {isLoading && <LoadingSkeleton rows={3} />}
-      {data?.data && data.data.length === 0 && (
+      {!isLoading && abertas.length === 0 && (
         <EmptyState title="Nenhuma comanda aberta" icon={<ClipboardList className="h-6 w-6" />} />
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        {data?.data?.map((c) => (
-          <Card key={c.id} className="p-4">
+        {abertas.map((c) => (
+          <Card
+            key={c.id}
+            className="p-4 cursor-pointer hover:border-primary transition-colors"
+            onClick={() => setSelId(c.id)}
+          >
             <div className="flex items-center justify-between mb-2">
               <h3 className="font-semibold">{c.referencia_mesa_livre}</h3>
-              <Badge variant={c.status === "aberta" ? "default" : "secondary"}>{c.status}</Badge>
+              <Badge variant="default">{c.status}</Badge>
             </div>
             <p className="text-xs text-muted-foreground mb-3">
               Aberta há {formatTimeAgo(c.abertura_em)} · {c.itens.length} itens
@@ -51,20 +68,27 @@ export default function Comandas() {
                 </div>
               ))}
               {c.itens.length > 3 && <p className="text-xs text-muted-foreground">+ {c.itens.length - 3} itens</p>}
+              {c.itens.length === 0 && <p className="text-xs text-muted-foreground italic">Sem itens — clique para adicionar</p>}
             </div>
             <div className="flex items-center justify-between border-t pt-2">
               <span className="text-sm text-muted-foreground">Total</span>
               <span className="font-semibold">{formatBRL(c.total_atual)}</span>
             </div>
-            <PermissionGate action="fechar_comanda">
-              <Button variant="outline" size="sm" className="w-full mt-3"
-                onClick={() => toast.info("Fechamento com divisão — próxima entrega")}>
-                Fechar comanda
-              </Button>
-            </PermissionGate>
           </Card>
         ))}
       </div>
+
+      <AbrirComandaDialog
+        open={abrirOpen}
+        onOpenChange={setAbrirOpen}
+        onCreated={refresh}
+      />
+
+      <ComandaDrawer
+        comandaId={selId}
+        onOpenChange={(v) => !v && setSelId(null)}
+        onChanged={refresh}
+      />
     </>
   );
 }
