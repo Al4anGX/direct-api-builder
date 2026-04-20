@@ -19,6 +19,7 @@ import { Plus, Star, MessageCircle, ClipboardList, ShoppingBag, ChevronRight } f
 import { toast } from "sonner";
 import type { Pedido, StatusPedido, CanalPedido } from "@/types/domain";
 import { PedidoDrawer } from "./PedidoDrawer";
+import { NovoPedidoWizard } from "./NovoPedidoWizard";
 
 // 5 colunas operacionais. Rascunho/Cancelado/Finalizado ficam fora do quadro.
 const COLUNAS: { status: StatusPedido; label: string; next: StatusPedido | null }[] = [
@@ -33,6 +34,7 @@ export default function Pedidos() {
   const [busca, setBusca] = useState("");
   const [canal, setCanal] = useState<CanalPedido | "todos">("todos");
   const [pedidoSelId, setPedidoSelId] = useState<string | null>(null);
+  const [novoOpen, setNovoOpen] = useState(false);
   const qc = useQueryClient();
   const { activeRole } = useAuth();
 
@@ -72,7 +74,7 @@ export default function Pedidos() {
         description="Quadro Kanban — fila única de todos os canais"
         actions={
           <PermissionGate action="criar_pedido">
-            <Button onClick={() => toast.info("Wizard de novo pedido — próxima entrega")}>
+            <Button onClick={() => setNovoOpen(true)}>
               <Plus className="h-4 w-4 mr-1" /> Novo pedido
             </Button>
           </PermissionGate>
@@ -127,6 +129,8 @@ export default function Pedidos() {
         open={!!pedidoSelId}
         onOpenChange={(v) => { if (!v) setPedidoSelId(null); }}
       />
+
+      <NovoPedidoWizard open={novoOpen} onOpenChange={setNovoOpen} />
     </>
   );
 }
