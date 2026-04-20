@@ -16,6 +16,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from "@/components/ui/dialog";
 import { pedidosService } from "@/services/pedidos.service";
+import { PagamentosPedido } from "./PagamentosPedido";
 import { formatBRL, formatDateTimeBR, formatTelefoneBR } from "@/lib/formatters";
 import { useAuth } from "@/hooks/useAuth";
 import { can } from "@/lib/permissions";
@@ -196,6 +197,10 @@ export function PedidoDrawer({ pedidoId, open, onOpenChange }: Props) {
                       <span>{formatBRL(pedido.valor_total)}</span>
                     </div>
                   </section>
+
+                  <Separator />
+
+                  <PagamentosPedido pedidoId={pedido.id} totalPedido={pedido.valor_total} />
                 </div>
               </ScrollArea>
 
