@@ -81,7 +81,7 @@ export function ComandaDrawer({ comandaId, onOpenChange, onChanged }: Props) {
               </p>
 
               {comanda.status === "aberta" && (
-                <PermissionGate action="adicionar_item_comanda">
+                <PermissionGate action="abrir_comanda">
                   <div className="mt-4">
                     <p className="text-sm font-medium mb-2">Adicionar item</p>
                     <Input
@@ -131,7 +131,7 @@ export function ComandaDrawer({ comandaId, onOpenChange, onChanged }: Props) {
                       </div>
                       <span className="text-sm tabular-nums">{formatBRL(i.preco_unitario * i.quantidade)}</span>
                       {comanda.status === "aberta" && (
-                        <PermissionGate action="adicionar_item_comanda">
+                        <PermissionGate action="abrir_comanda">
                           <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => remover(i.id)}>
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
