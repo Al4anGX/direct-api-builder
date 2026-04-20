@@ -65,7 +65,7 @@ export const pagamentosService = {
 
     const { data, error } = await supabase
       .from("pagamentos")
-      .insert(payload)
+      .insert(payload as never)
       .select()
       .single();
     if (error) return fail("PAG_INS_ERR", error.message);

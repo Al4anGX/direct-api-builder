@@ -63,7 +63,12 @@ export function ChavePixForm() {
       if (!parsed.success) {
         throw new Error(parsed.error.issues[0]?.message ?? "Dados inválidos");
       }
-      const res = await chavePixService.salvar(espaco!.id, parsed.data);
+      const res = await chavePixService.salvar(espaco!.id, {
+        tipo: parsed.data.tipo,
+        chave: parsed.data.chave,
+        banco: parsed.data.banco,
+        nome_recebedor: parsed.data.nome_recebedor,
+      });
       if (!res.success) throw new Error(res.error?.message ?? "Erro ao salvar");
       return res.data!;
     },
