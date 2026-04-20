@@ -18,6 +18,7 @@ import { can } from "@/lib/permissions";
 import { Plus, Star, MessageCircle, ClipboardList, ShoppingBag, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import type { Pedido, StatusPedido, CanalPedido } from "@/types/domain";
+import { PedidoDrawer } from "./PedidoDrawer";
 
 // 5 colunas operacionais. Rascunho/Cancelado/Finalizado ficam fora do quadro.
 const COLUNAS: { status: StatusPedido; label: string; next: StatusPedido | null }[] = [
@@ -31,6 +32,7 @@ const COLUNAS: { status: StatusPedido; label: string; next: StatusPedido | null 
 export default function Pedidos() {
   const [busca, setBusca] = useState("");
   const [canal, setCanal] = useState<CanalPedido | "todos">("todos");
+  const [pedidoSelId, setPedidoSelId] = useState<string | null>(null);
   const qc = useQueryClient();
   const { activeRole } = useAuth();
 
@@ -111,6 +113,7 @@ export default function Pedidos() {
                 pedidos={grupos[col.status]}
                 proximoStatus={col.next}
                 onAvancar={(id, next) => avancar.mutate({ id, status: next })}
+                onAbrir={(id) => setPedidoSelId(id)}
                 podeAvancar={podeAvancar}
               />
             ))}
@@ -118,18 +121,25 @@ export default function Pedidos() {
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
       )}
+
+      <PedidoDrawer
+        pedidoId={pedidoSelId}
+        open={!!pedidoSelId}
+        onOpenChange={(v) => { if (!v) setPedidoSelId(null); }}
+      />
     </>
   );
 }
 
 function Coluna({
-  titulo, status, pedidos, proximoStatus, onAvancar, podeAvancar,
+  titulo, status, pedidos, proximoStatus, onAvancar, onAbrir, podeAvancar,
 }: {
   titulo: string;
   status: StatusPedido;
   pedidos: Pedido[];
   proximoStatus: StatusPedido | null;
   onAvancar: (id: string, next: StatusPedido) => void;
+  onAbrir: (id: string) => void;
   podeAvancar: boolean;
 }) {
   return (
@@ -150,6 +160,7 @@ function Coluna({
               pedido={p}
               proximoStatus={proximoStatus}
               onAvancar={onAvancar}
+              onAbrir={onAbrir}
               podeAvancar={podeAvancar}
             />
           ))
@@ -160,17 +171,18 @@ function Coluna({
 }
 
 function PedidoCard({
-  pedido, proximoStatus, onAvancar, podeAvancar,
+  pedido, proximoStatus, onAvancar, onAbrir, podeAvancar,
 }: {
   pedido: Pedido;
   proximoStatus: StatusPedido | null;
   onAvancar: (id: string, next: StatusPedido) => void;
+  onAbrir: (id: string) => void;
   podeAvancar: boolean;
 }) {
   return (
     <Card
       className="p-3 hover:shadow-soft transition-shadow cursor-pointer space-y-2"
-      onClick={() => toast.info(`Drawer do pedido #${pedido.numero_pedido} — próxima entrega`)}
+      onClick={() => onAbrir(pedido.id)}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
