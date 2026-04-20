@@ -129,6 +129,8 @@ export default function Pedidos() {
         open={!!pedidoSelId}
         onOpenChange={(v) => { if (!v) setPedidoSelId(null); }}
       />
+
+      <NovoPedidoWizard open={novoOpen} onOpenChange={setNovoOpen} />
     </>
   );
 }
