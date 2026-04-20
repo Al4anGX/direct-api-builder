@@ -18,6 +18,7 @@ import { can } from "@/lib/permissions";
 import { Plus, Star, MessageCircle, ClipboardList, ShoppingBag, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import type { Pedido, StatusPedido, CanalPedido } from "@/types/domain";
+import { PedidoDrawer } from "./PedidoDrawer";
 
 // 5 colunas operacionais. Rascunho/Cancelado/Finalizado ficam fora do quadro.
 const COLUNAS: { status: StatusPedido; label: string; next: StatusPedido | null }[] = [
@@ -31,6 +32,7 @@ const COLUNAS: { status: StatusPedido; label: string; next: StatusPedido | null 
 export default function Pedidos() {
   const [busca, setBusca] = useState("");
   const [canal, setCanal] = useState<CanalPedido | "todos">("todos");
+  const [pedidoSelId, setPedidoSelId] = useState<string | null>(null);
   const qc = useQueryClient();
   const { activeRole } = useAuth();
 
