@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import { formatTelefoneBR } from "@/lib/formatters";
+import { ChavePixForm } from "./ChavePixForm";
 
 export default function Configuracoes() {
   const { espaco } = useAuth();
@@ -32,7 +33,7 @@ export default function Configuracoes() {
           <Placeholder text="Configuração de impressão / vias por canal — próxima entrega" />
         </TabsContent>
         <TabsContent value="pix">
-          <Placeholder text="Cadastro de chave PIX — próxima entrega" />
+          <ChavePixForm />
         </TabsContent>
       </Tabs>
     </>

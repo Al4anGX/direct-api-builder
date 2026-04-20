@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      chaves_pix: {
+        Row: {
+          atualizado_em: string
+          banco: string
+          chave: string
+          criado_em: string
+          espaco_id: string
+          id: string
+          nome_recebedor: string
+          tipo: Database["public"]["Enums"]["tipo_chave_pix"]
+        }
+        Insert: {
+          atualizado_em?: string
+          banco: string
+          chave: string
+          criado_em?: string
+          espaco_id: string
+          id?: string
+          nome_recebedor: string
+          tipo: Database["public"]["Enums"]["tipo_chave_pix"]
+        }
+        Update: {
+          atualizado_em?: string
+          banco?: string
+          chave?: string
+          criado_em?: string
+          espaco_id?: string
+          id?: string
+          nome_recebedor?: string
+          tipo?: Database["public"]["Enums"]["tipo_chave_pix"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chaves_pix_espaco_id_fkey"
+            columns: ["espaco_id"]
+            isOneToOne: true
+            referencedRelation: "espacos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       espacos: {
         Row: {
           ativo: boolean
@@ -52,6 +93,74 @@ export type Database = {
           trial_ate?: string | null
         }
         Relationships: []
+      }
+      pagamentos: {
+        Row: {
+          atualizado_em: string
+          conciliado: boolean
+          confirmado_em: string | null
+          confirmado_por: string | null
+          criado_em: string
+          espaco_id: string
+          estornado_em: string | null
+          estornado_por: string | null
+          id: string
+          metodo: Database["public"]["Enums"]["metodo_pagamento"]
+          motivo_estorno: string | null
+          observacao: string | null
+          pedido_id: string
+          registrado_por: string | null
+          status: Database["public"]["Enums"]["status_pagamento"]
+          troco: number | null
+          valor: number
+        }
+        Insert: {
+          atualizado_em?: string
+          conciliado?: boolean
+          confirmado_em?: string | null
+          confirmado_por?: string | null
+          criado_em?: string
+          espaco_id: string
+          estornado_em?: string | null
+          estornado_por?: string | null
+          id?: string
+          metodo: Database["public"]["Enums"]["metodo_pagamento"]
+          motivo_estorno?: string | null
+          observacao?: string | null
+          pedido_id: string
+          registrado_por?: string | null
+          status?: Database["public"]["Enums"]["status_pagamento"]
+          troco?: number | null
+          valor: number
+        }
+        Update: {
+          atualizado_em?: string
+          conciliado?: boolean
+          confirmado_em?: string | null
+          confirmado_por?: string | null
+          criado_em?: string
+          espaco_id?: string
+          estornado_em?: string | null
+          estornado_por?: string | null
+          id?: string
+          metodo?: Database["public"]["Enums"]["metodo_pagamento"]
+          motivo_estorno?: string | null
+          observacao?: string | null
+          pedido_id?: string
+          registrado_por?: string | null
+          status?: Database["public"]["Enums"]["status_pagamento"]
+          troco?: number | null
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagamentos_espaco_id_fkey"
+            columns: ["espaco_id"]
+            isOneToOne: false
+            referencedRelation: "espacos"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -147,6 +256,9 @@ export type Database = {
     }
     Enums: {
       app_role: "superadmin" | "admin" | "caixa" | "entregador"
+      metodo_pagamento: "pix" | "dinheiro" | "credito" | "debito"
+      status_pagamento: "pendente" | "aprovado" | "estornado"
+      tipo_chave_pix: "cpf" | "cnpj" | "telefone" | "email" | "aleatoria"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -275,6 +387,9 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["superadmin", "admin", "caixa", "entregador"],
+      metodo_pagamento: ["pix", "dinheiro", "credito", "debito"],
+      status_pagamento: ["pendente", "aprovado", "estornado"],
+      tipo_chave_pix: ["cpf", "cnpj", "telefone", "email", "aleatoria"],
     },
   },
 } as const
