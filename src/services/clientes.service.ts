@@ -25,4 +25,22 @@ export const clientesService = {
     store = store.map((c) => (c.id === id ? { ...c, blacklist: value } : c));
     return delay(ok(store.find((x) => x.id === id)!));
   },
+  async criarRapido(input: { nome: string; telefone: string }): Promise<ApiResponse<Cliente>> {
+    const tel = normalizeTelefone(input.telefone);
+    const existente = store.find((c) => c.telefone === tel);
+    if (existente) return delay(ok(existente));
+    const novo: Cliente = {
+      id: `cli${Date.now()}`,
+      espaco_id: "demo",
+      nome: input.nome.trim(),
+      telefone: tel,
+      blacklist: false,
+      enderecos: [],
+      ultimos_pedidos: [],
+      total_pedidos: 0,
+      ticket_medio: 0,
+    };
+    store = [novo, ...store];
+    return delay(ok(novo));
+  },
 };
